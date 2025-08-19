@@ -10,7 +10,11 @@ from utils import (
     split_nodes_image,
     split_nodes_link,
 )
-from markdown_to_nodes import text_to_textnodes, markdown_to_blocks
+from markdown_to_nodes import (
+    text_to_textnodes,
+    markdown_to_blocks,
+)
+from blocknode import block_to_block_type, BlockType
 
 
 class TestTextNodeToHTMLNode(unittest.TestCase):
@@ -339,6 +343,79 @@ This is the same paragraph on a new line
                 "- This is a list\n- with items",
             ],
         )
+
+    def test_block_to_block_type_heading(self):
+        text = "# Heading"
+        self.assertEqual(block_to_block_type(text), BlockType.HEADING)
+        text = "## Heading"
+        self.assertEqual(block_to_block_type(text), BlockType.HEADING)
+        text = "### Heading"
+        self.assertEqual(block_to_block_type(text), BlockType.HEADING)
+        text = "#### Heading"
+        self.assertEqual(block_to_block_type(text), BlockType.HEADING)
+        text = "##### Heading"
+        self.assertEqual(block_to_block_type(text), BlockType.HEADING)
+        text = "###### Heading"
+        self.assertEqual(block_to_block_type(text), BlockType.HEADING)
+        text = """###### Heading
+test multiple
+lines"""
+        self.assertEqual(block_to_block_type(text), BlockType.HEADING)
+        text = "######Heading"
+        self.assertNotEqual(block_to_block_type(text), BlockType.HEADING)
+        text = "####### Heading"
+        self.assertNotEqual(block_to_block_type(text), BlockType.HEADING)
+
+    def test_block_to_block_type_code(self):
+        text = "``` a bit of code ```"
+        self.assertEqual(block_to_block_type(text), BlockType.CODE)
+        text = "``` a bit of non code"
+        self.assertNotEqual(block_to_block_type(text), BlockType.CODE)
+        text = """``` 
+        a bit of multiline code
+    ```"""
+        self.assertEqual(block_to_block_type(text), BlockType.CODE)
+
+    def test_block_to_block_type_quote(self):
+        text = ">a one line quote"
+        self.assertEqual(block_to_block_type(text), BlockType.QUOTE)
+        text = """>a one multiline
+>quote"""
+        self.assertEqual(block_to_block_type(text), BlockType.QUOTE)
+        text = """>a one multiline
+NON quote"""
+        self.assertNotEqual(block_to_block_type(text), BlockType.QUOTE)
+
+
+    def test_block_to_block_type_unordered_list(self):
+        text = "-a one line unordered list"
+        self.assertEqual(block_to_block_type(text), BlockType.UNORDERED_LIST)
+        text = """-a one multiline
+-unordered_list"""
+        self.assertEqual(block_to_block_type(text), BlockType.UNORDERED_LIST)
+        text = """-a one multiline
+NON unordered_list"""
+        self.assertNotEqual(block_to_block_type(text), BlockType.UNORDERED_LIST)
+
+    def test_block_to_block_type_ordered_list(self):
+        text = "1. A one line ordered list"
+        self.assertEqual(block_to_block_type(text), BlockType.ORDERED_LIST)
+        text = """1. A two lines 
+2. ordered list"""
+        self.assertEqual(block_to_block_type(text), BlockType.ORDERED_LIST)
+        text = """0. A wrong two lines 
+1. ordered list"""
+        self.assertNotEqual(block_to_block_type(text), BlockType.ORDERED_LIST)
+
+    def test_block_to_block_type_paragraph(self):
+        text = "A one line  paragraph"
+        self.assertEqual(block_to_block_type(text), BlockType.PARAGRAPH)
+        text = """- A two lines 
+2. weird paragraph"""
+        self.assertEqual(block_to_block_type(text), BlockType.PARAGRAPH)
+        text = """ > A wrong two lines 
+1. ordered list is a Paragraph"""
+        self.assertEqual(block_to_block_type(text), BlockType.PARAGRAPH)
 
 
 if __name__ == "__main__":

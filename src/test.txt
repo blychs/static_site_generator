@@ -1,4 +1,3 @@
-import re
 from utils import split_nodes_delimiter, split_nodes_image, split_nodes_link 
 from textnode import TextNode, TextType
 from blocknode import BlockType, block_to_block_type
@@ -23,17 +22,16 @@ def markdown_to_blocks(text):
     return blocks
 
 
-def count_number_of_starting_hash(text):
-    starter = re.match(r'^#{1,6} ', text)
-    if not starter:
-        raise ValueError('Text does not have proper format')
-    return len(starter[0]) - 1
+def block_type_to_tag(block_type):
+    match block_type:
+        case BlockType.HEADING:
+            return 
+def markdown_to_html_block(text):
+    
 
 
 def markdown_to_html_node(text):
     markdown_blocks = markdown_to_blocks(text)
     textnodes = []
     for block in markdown_blocks:
-        textnode = text_to_textnodes(text)
-
-
+        textnodes.append(block_to_block_type(block))

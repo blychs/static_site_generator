@@ -84,9 +84,7 @@ def split_nodes_link(old_nodes):
                 modified_nodes.append(TextNode(node, TextType.TEXT))
             if len(link_text) > i:
                 modified_nodes.append(
-                    TextNode(
-                        link_text[i][0], TextType.LINK, link_text[i][1]
-                    )
+                    TextNode(link_text[i][0], TextType.LINK, link_text[i][1])
                 )
         new_nodes.extend(modified_nodes)
     return new_nodes
@@ -108,9 +106,7 @@ def split_nodes_image(old_nodes):
                 modified_nodes.append(TextNode(node, TextType.TEXT))
             if len(image_text) > i:
                 modified_nodes.append(
-                    TextNode(
-                        image_text[i][0], TextType.IMAGE, image_text[i][1]
-                    )
+                    TextNode(image_text[i][0], TextType.IMAGE, image_text[i][1])
                 )
         new_nodes.extend(modified_nodes)
     return new_nodes

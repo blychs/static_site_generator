@@ -1,4 +1,18 @@
 class HTMLNode:
+    """HTMLNode, requires tag, value, children and props.
+
+    Attributes
+    ----------
+    tag : string (optional)
+        string with the tag that corresponds.
+    value : string (optional)
+        string with the contents of the node.
+    children : list[HTMLNode | LeafNode | ParentNode]
+        List of HTML nodes that are children of the previous node.
+    props : dict[str, str]
+        List of properties to add to the html tags when parsing.
+    """
+
     def __init__(self, tag=None, value=None, children=None, props=None):
         self.tag = tag
         self.value = value
@@ -45,7 +59,6 @@ class ParentNode(HTMLNode):
             child = [].append(children)
             super().__init__(tag, None, child, props)
 
-
     def to_html(self):
         if self.tag is None:
             raise ValueError("Parent node has to have tags")
@@ -57,4 +70,6 @@ class ParentNode(HTMLNode):
         return f"<{self.tag}>{children_html}</{self.tag}>"
 
     def __repr__(self):
-        return f"ParentNode(tag={self.tag}, children={self.children}, props={self.props})"
+        return (
+            f"ParentNode(tag={self.tag}, children={self.children}, props={self.props})"
+        )

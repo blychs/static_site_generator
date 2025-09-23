@@ -386,7 +386,6 @@ lines"""
 NON quote"""
         self.assertNotEqual(block_to_block_type(text), BlockType.QUOTE)
 
-
     def test_block_to_block_type_unordered_list(self):
         text = "-a one line unordered list"
         self.assertEqual(block_to_block_type(text), BlockType.UNORDERED_LIST)

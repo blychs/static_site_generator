@@ -52,6 +52,26 @@ def quote_to_html(text):
     return "blockquote", "\n".join(lines)
 
 
+def olist_to_html(text):
+    orig_lines = text.split('\n')
+    def _re_lstrip(text):
+        return re.sub(r"(?m)^\d+\. ", "", text)
+    text_nodes = [text_to_textnodes(_re_lstrip(orig_line)) for orig_line in orig_lines]
+    def _create_nodes(text_nodes):
+        text_nodes_all = [text_node_to_html_node(text_node) for text_node in text_nodes]
+        return ParentNode(tag="li", children=text_nodes_all)
+    return list(map(_create_nodes, text_nodes))
+
+
+def uolist_to_html(text):
+    orig_lines = text.split('\n')
+    text_nodes = [text_to_textnodes(orig_line.lstrip("- ")) for orig_line in orig_lines]
+    def _create_nodes(text_nodes):
+        text_nodes_all = [text_node_to_html_node(text_node) for text_node in text_nodes]
+        return ParentNode(tag="li", children=text_nodes_all)
+    return list(map(_create_nodes, text_nodes))
+
+
 def markdown_to_html_node(text):
     output_node = ParentNode(tag="div", children=[])
     blocks = markdown_to_blocks(text)
@@ -73,5 +93,10 @@ def markdown_to_html_node(text):
             code_content = block.strip("```").lstrip()
             code_node = LeafNode(tag="code", value=code_content)
             output_node.children.append(ParentNode(tag="pre", children=[code_node]))
-
+        elif block_type == BlockType.UNORDERED_LIST:
+            elements = uolist_to_html(block)
+            output_node.children.append(ParentNode(tag="ul", children=elements))
+        elif block_type == BlockType.ORDERED_LIST:
+            elements = olist_to_html(block)
+            output_node.children.append(ParentNode(tag="ol", children=elements))
     return output_node

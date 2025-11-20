@@ -61,3 +61,59 @@ the **same** even with inline stuff
             html,
             "<div><blockquote>This is a blockquote with <b>bold</b> text</blockquote></div>",
             )
+
+
+    def test_unordered_list(self):
+        md = """
+- I'm testing this
+- Maybe it works
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+                html,
+                "<div><ul><li>I'm testing this</li><li>Maybe it works</li></ul></div>"
+                )
+
+
+    def test_unordered_list_mixed(self):
+        md = """
+- But I'll have some `code`
+- And also some **bold** and _italic_ text
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+                html,
+                "<div><ul><li>But I'll have some <code>code</code></li><li>And also some <b>bold</b> and <i>italic</i> text</li></ul></div>"
+                )
+
+
+    def test_ordered_list(self):
+        md = """
+1. I'm testing this
+2. Maybe it works
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+                html,
+                "<div><ol><li>I'm testing this</li><li>Maybe it works</li></ol></div>"
+                )
+
+
+    def test_ordered_list_mixed(self):
+        md = """
+1. But I'll have some `code`
+2. And also some **bold** and _italic_ text
+"""
+
+        node = markdown_to_html_node(md)
+        html = node.to_html()
+        self.assertEqual(
+                html,
+                "<div><ol><li>But I'll have some <code>code</code></li><li>And also some <b>bold</b> and <i>italic</i> text</li></ol></div>"
+                )

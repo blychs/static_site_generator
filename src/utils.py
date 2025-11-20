@@ -8,6 +8,8 @@ def text_node_to_html_node(text_node):
     text_type = text_node.text_type
     text = text_node.text
     props = None
+    if TextType != TextType.CODE:
+        text = text.replace("\n", " ")
     match text_type:
         case TextType.TEXT:
             return LeafNode(None, text)

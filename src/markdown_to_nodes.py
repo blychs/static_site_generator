@@ -27,7 +27,13 @@ def markdown_to_blocks(text):
     text = text.split("\n\n")
     blocks = []
     for t in text:
+        if t.startswith("```"):
+            t = t.replace("```\n", "```")
+            blocks.append(t)
+            continue
+        t = t.strip('\n')
         block_no_trailing = t.strip()
+        block_no_trailing = block_no_trailing.strip('\n')
         if block_no_trailing != "":
             blocks.append(block_no_trailing)
     return blocks
@@ -46,34 +52,26 @@ def quote_to_html(text):
     return "blockquote", "\n".join(lines)
 
 
-def markdown_to_html_nodes(text):
+def markdown_to_html_node(text):
     output_node = ParentNode(tag="div", children=[])
     blocks = markdown_to_blocks(text)
-    breakpoint()
-    block_with_block_type = []
     for block in blocks:
         block_type = block_to_block_type(block)
         if block_type == BlockType.HEADING:
-            tag, contents = heading_number(block)
+            tag, contents = count_number_of_starting_hash(block)
             output_node.children.append(HTMLNode(tag, contents))
-        if block_type == BlockType.PARAGRAPH:
+        elif block_type == BlockType.PARAGRAPH:
             block_textnodes = text_to_textnodes(block)
             text_nodes = [text_node_to_html_node(t) for t in block_textnodes]
-            breakpoint()
             output_node.children.append(ParentNode(tag="p", children=text_nodes))
-        if block_type == BlockType.QUOTE:
+        elif block_type == BlockType.QUOTE:
             tag, contents = quote_to_html(block)
-            output_node.children.append(HTMLNode(tag, contents))
-    breakpoint()
+            content_nodes = text_to_textnodes(contents)
+            html = [text_node_to_html_node(t) for t in content_nodes]
+            output_node.children.append(ParentNode(tag=tag, children=html))
+        elif block_type == BlockType.CODE:
+            code_content = block.strip("```").lstrip()
+            code_node = LeafNode(tag="code", value=code_content)
+            output_node.children.append(ParentNode(tag="pre", children=[code_node]))
 
-
-if __name__ == '__main__':
-    md = """
-This is **bolded** paragraph
-text in a p
-tag here
-
-This is another paragraph with _italic_ text and `code` here
-
-"""
-    markdown_to_html_nodes(md)
+    return output_node

@@ -1,4 +1,6 @@
+import os
 import re
+import shutil
 
 from htmlnode import LeafNode  # , HTMLNode, ParentNode
 from textnode import TextNode, TextType
@@ -112,3 +114,15 @@ def split_nodes_image(old_nodes):
                 )
         new_nodes.extend(modified_nodes)
     return new_nodes
+
+
+def copy_src_dst(src, dst):
+    if os.path.isfile(src):
+        shutil.copy(src, dst)
+        return
+    contents = os.listdir(src)
+    os.mkdir(dst)
+    for content in contents:
+        new_src = os.path.join(src, content)
+        new_dst = os.path.join(dst, content)
+        copy_src_dst(new_src, new_dst)

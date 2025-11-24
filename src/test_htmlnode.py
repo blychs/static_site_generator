@@ -16,7 +16,7 @@ class TestHTMLNode(unittest.TestCase):
     def test_props_empty(self):
         node = HTMLNode()
         html_props = node.props_to_html()
-        self.assertEqual(html_props, None)
+        self.assertEqual(html_props, "")
 
     def test_only_one_prop(self):
         node = HTMLNode(props={"href": "https://www.google.com"})
@@ -64,6 +64,13 @@ class TestHTMLNode(unittest.TestCase):
         tag = "div"
         node = LeafNode(tag, text)
         self.assertEqual(node.to_html(), f"<{tag}>{text}</{tag}>")
+
+    def test_to_html_with_props(self):
+        text = "This is a test"
+        tag = "a"
+        props = {"href": "www.a.com"}
+        node = LeafNode(tag, text, props=props)
+        self.assertEqual(node.to_html(), f'<{tag} href="www.a.com">{text}</{tag}>')
 
     def test_leaf_to_html_p(self):
         node = LeafNode("p", "Hello, world!")

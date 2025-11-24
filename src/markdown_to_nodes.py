@@ -8,7 +8,6 @@ from utils import (
     split_nodes_link,
     text_node_to_html_node,
 )
-from textnode import TextNode, TextType
 from blocknode import block_to_block_type, BlockType
 from htmlnode import HTMLNode, LeafNode, ParentNode
 
@@ -39,16 +38,21 @@ def markdown_to_blocks(text):
     return blocks
 
 
-def count_number_of_starting_hash(text):
+def heading_to_html(text):
     starter = re.match(r"^#{1,6} ", text)
     if not starter:
         raise ValueError("Text does not have proper format")
-    return len(starter[0]) - 1
+    num_hashes = len(starter[0]) - 1
+    contents = text.lstrip("#").strip()
+    text_nodes = text_to_textnodes(contents)
+    html_nodes = [text_node_to_html_node(text_node) for text_node in text_nodes]
+    parent_node = ParentNode(tag=f"h{num_hashes}", children=html_nodes)
+    return parent_node
 
 
 def quote_to_html(text):
     lines = text.split("\n")
-    lines = [e.lstrip(">") for e in lines]
+    lines = [e.lstrip(">").strip() for e in lines]
     return "blockquote", "\n".join(lines)
 
 
@@ -78,8 +82,7 @@ def markdown_to_html_node(text):
     for block in blocks:
         block_type = block_to_block_type(block)
         if block_type == BlockType.HEADING:
-            tag, contents = count_number_of_starting_hash(block)
-            output_node.children.append(HTMLNode(tag, contents))
+            output_node.children.append(heading_to_html(block))
         elif block_type == BlockType.PARAGRAPH:
             block_textnodes = text_to_textnodes(block)
             text_nodes = [text_node_to_html_node(t) for t in block_textnodes]

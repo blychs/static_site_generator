@@ -24,7 +24,7 @@ class HTMLNode:
 
     def props_to_html(self):
         if self.props is None:
-            return None
+            return ""
         output_html = ""
         for prop in self.props:
             if output_html != "":
@@ -45,7 +45,10 @@ class LeafNode(HTMLNode):
             raise ValueError("Leaf nodes *must* have a value")
         if self.tag is None:
             return self.value
-        return f"<{self.tag}>{self.value}</{self.tag}>"
+        props_html = self.props_to_html()
+        if len(self.tag) > 0 and len(props_html) > 0:
+            props_html = " " + props_html
+        return f"<{self.tag}{props_html}>{self.value}</{self.tag}>"
 
     def __repr__(self):
         return f"LeafNode(tag={self.tag}, value={self.value}, props={self.props})"
@@ -67,7 +70,10 @@ class ParentNode(HTMLNode):
         children_html = ""
         for child in self.children:
             children_html += child.to_html()
-        return f"<{self.tag}>{children_html}</{self.tag}>"
+        props_html = self.props_to_html()
+        if len(self.tag) > 0 and len(props_html) > 0:
+            props_html = " " + props_html
+        return f"<{self.tag}{props_html}>{children_html}</{self.tag}>"
 
     def __repr__(self):
         return (
